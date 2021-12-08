@@ -75,6 +75,11 @@ const TaskListPage = () => {
                             key="titulo"
                         />
                         <Column
+                            title="Categoria"
+                            dataIndex="nome"
+                            key="nome"
+                        />
+                        <Column
                             title="Criada em"
                             dataIndex="data_criacao"
                             key="data_criacao"
