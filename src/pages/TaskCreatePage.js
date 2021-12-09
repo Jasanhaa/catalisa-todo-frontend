@@ -8,7 +8,10 @@ import { useCallback, useState } from 'react';
 import axios from 'axios';
 
 import InputText from '../components/InputText';
+import InputSelect from '../components/InputSelect';
 import { validateCategory, validateTitulo } from '../helpers/validation-helper';
+import { useEffect } from 'react/cjs/react.development';
+
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -17,6 +20,8 @@ const TaskCreatePage = () => {
     // const navigate = useNavigate();
     const [formValues, setFormValues] = useState({concluida: false, titulo: ''})
     const [loading, setLoading] = useState(false);
+    const [loadingCategories, setLoadingCategories] = useState(false);
+    const [categoriesOptions, setCategoriesOptions] = useState([]);
 
     const handleSubscription = useCallback(async () => {
         try {
@@ -53,6 +58,21 @@ const TaskCreatePage = () => {
         };
     }, [formValues]);
 
+    const loadCategoriesOptions = useCallback(async () => {
+        try {
+            setLoadingCategories(true);
+            const { data } = await axios.get('/tarefas/categorias/listar');
+            setCategoriesOptions(data.map(category => ({
+                value: category.id,
+                title: category.nome,
+            })))
+        } catch (error) {
+            console.warn(error);
+        } finally {
+            setLoadingCategories(false);
+        };
+    }, []);
+
     const handleInputChange = useCallback((event) => {
         const { value } = event.target;
 
@@ -80,6 +100,11 @@ const TaskCreatePage = () => {
         })
     }, [formValues]);
 
+    useEffect(() => {
+        loadCategoriesOptions();
+    }, []);
+    
+
     return (
         <Content>
             <Row
@@ -106,15 +131,19 @@ const TaskCreatePage = () => {
                                 required
                             />
 
-                            <InputText
+                            <InputSelect 
                                 name="categoria_id"
                                 label="Categoria"
                                 size="large"
                                 onChange={handleInputChangeCategoria}
-                                validate={validateCategory}
-                                disable={loading}
+                                disable={loading || loadingCategories}
+                                options={categoriesOptions}
                             />
 
+                            <div style={{
+                                marginBottom: '20px',
+                                textAlign: 'center',
+                            }}>
                             <Checkbox
                                 title="Concluida"
                                 dataIndex="concluida"
@@ -123,6 +152,7 @@ const TaskCreatePage = () => {
                             >
                                 Concluida
                             </Checkbox>
+                            </div>
 
                             <Button
                                 block
