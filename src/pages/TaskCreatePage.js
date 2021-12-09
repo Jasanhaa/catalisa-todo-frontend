@@ -1,14 +1,14 @@
 import {
     Button, Card,
     Col, Form, Layout, Row,
-    Typography, Modal, Checkbox
+    Typography, Modal, Checkbox,
 } from 'antd';
 //   import { Link, useNavigate } from 'react-router-dom';
 import { useCallback, useState } from 'react';
 import axios from 'axios';
 
 import InputText from '../components/InputText';
-import { validateTitulo } from '../helpers/validation-helper';
+import { validateCategory, validateTitulo } from '../helpers/validation-helper';
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -22,12 +22,13 @@ const TaskCreatePage = () => {
         try {
             setLoading(true);
 
-            const { titulo, concluida } = formValues;
+            const { titulo, concluida, categoria_id } = formValues;
 
             if (!titulo) return;
 
             const body = {
                 titulo: titulo,
+                categoria_id: categoria_id,
                 concluida: concluida,
             }
 
@@ -60,6 +61,15 @@ const TaskCreatePage = () => {
             titulo: value,
         })
     }, [formValues]);
+
+    const handleInputChangeCategoria = useCallback((event) => {
+        const { value } = event.target;
+
+        setFormValues({
+            ...formValues,
+            categoria_id: value,
+        })
+    }, [formValues])
 
     const handleInputCheckbox = useCallback((event) => {
         const { checked } = event.target;
@@ -94,6 +104,15 @@ const TaskCreatePage = () => {
                                 validate={validateTitulo}
                                 disable={loading}
                                 required
+                            />
+
+                            <InputText
+                                name="categoria_id"
+                                label="Categoria"
+                                size="large"
+                                onChange={handleInputChangeCategoria}
+                                validate={validateCategory}
+                                disable={loading}
                             />
 
                             <Checkbox

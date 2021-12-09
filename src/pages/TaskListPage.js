@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Layout, Row, Col, Table, Modal, Button } from "antd";
 import axios from "axios";
 const { Content } = Layout;
@@ -7,6 +7,7 @@ const { Column } = Table;
 
 const TaskListPage = () => {
     const [tasks, setTasks] = useState([]);
+    // const [categorys, setCategorys] = useState([]);
     const [loading, setLoading] = useState(false);
 
     const requestTasks = async () => {
@@ -55,6 +56,11 @@ const TaskListPage = () => {
             </Button>
         );
     };
+
+    const renderCategoria = useCallback((categoria) => {
+        return categoria?.nome
+    }, [])
+
     return (
         <Content>
             <Row gutter={[24, 24]} justify="center">
@@ -76,8 +82,9 @@ const TaskListPage = () => {
                         />
                         <Column
                             title="Categoria"
-                            dataIndex="nome"
-                            key="nome"
+                            dataIndex="categoria"
+                            key="categoria"
+                            render={renderCategoria}
                         />
                         <Column
                             title="Criada em"
