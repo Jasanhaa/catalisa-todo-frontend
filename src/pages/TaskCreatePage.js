@@ -9,7 +9,7 @@ import axios from 'axios';
 
 import InputText from '../components/InputText';
 import InputSelect from '../components/InputSelect';
-import { validateCategory, validateTitulo } from '../helpers/validation-helper';
+import { validateTitulo } from '../helpers/validation-helper';
 import { useEffect } from 'react/cjs/react.development';
 
 
