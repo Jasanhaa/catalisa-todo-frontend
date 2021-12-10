@@ -1,6 +1,8 @@
-import { useCallback, useEffect, useState } from "react";
-import { Layout, Row, Col, Table, Modal, Button } from "antd";
+import { useCallback, useEffect, useState, React } from "react";
+import ReactDOM from 'react-dom';
+import { Layout, Row, Col, Table, Modal, Button, Popconfirm } from "antd";
 import axios from "axios";
+import { ExclamationCircleOutlined, DeleteOutlined, NodeExpandOutlined } from '@ant-design/icons';
 const { Content } = Layout;
 
 const { Column } = Table;
@@ -45,6 +47,7 @@ const TaskListPage = () => {
             setLoading(false);
         }
     };
+
     const renderCompleteTask = (concluida, task) => {
         return (
             <Button
@@ -54,6 +57,41 @@ const TaskListPage = () => {
             >
                 {concluida ? '✅' : '❌'}
             </Button>
+        );
+    };
+
+    const deleteTask = async (taskId) => {
+        try {
+            setLoading(true);
+            await axios.delete('/tarefas/' + taskId)
+            await requestTasks();
+        } catch (error) {
+            console.warn(error);
+            Modal.error({
+                title: "Não foi possível excluir a tarefa, tente novamente mais tarde."
+            })
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const renderDeleteTask = (task) => {
+        return (
+            <Popconfirm
+                onConfirm={() => {
+                    deleteTask(task.id);
+                }}
+                okText="Excluir"
+                okType="danger"
+                cancelText="Cancelar"
+                title="Deseja sair do sistema?"
+            >
+                <Button
+                    danger
+                >
+                    <DeleteOutlined />
+                </Button>
+            </Popconfirm >
         );
     };
 
@@ -100,11 +138,17 @@ const TaskListPage = () => {
                             key="concluida"
                             render={renderCompleteTask}
                         />
+
+                        <Column
+                            title="Excluir"
+                            key="excluir"
+                            render={renderDeleteTask}
+                        />
                     </Table>
                 </Col>
 
             </Row>
-        </Content>
+        </Content >
     );
 }
 
