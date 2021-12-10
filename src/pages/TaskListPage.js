@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useState, React } from "react";
-import ReactDOM from 'react-dom';
 import { Layout, Row, Col, Table, Modal, Button, Popconfirm } from "antd";
 import axios from "axios";
-import { ExclamationCircleOutlined, DeleteOutlined, NodeExpandOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 const { Content } = Layout;
 
 const { Column } = Table;
@@ -95,6 +94,34 @@ const TaskListPage = () => {
         );
     };
 
+    const alterTask = async (taskId) => {
+        try {
+            setLoading(true);
+            await axios.put('/tarefas' + taskId)
+            await requestTasks();
+        } catch (error) {
+            console.warn(error);
+            Modal.error({
+                title: "Não foi possível alterar a tarefa, tente novamente mais tarde."
+            })
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const renderAlterTask = (task) => {
+        return (
+            <Button
+                type="text"
+                onClick={() => {
+                    alterTask(task.id);
+                }}
+            >
+                <EditOutlined />
+            </Button>
+        )
+    }
+
     const renderCategoria = useCallback((categoria) => {
         return categoria?.nome
     }, [])
@@ -117,6 +144,11 @@ const TaskListPage = () => {
                             title="Titulo"
                             dataIndex="titulo"
                             key="titulo"
+                        />
+                        <Column 
+                            title="Alterar tarefa"
+                            key="alterar tarefa"
+                            render={renderAlterTask}
                         />
                         <Column
                             title="Categoria"
